@@ -156,21 +156,3 @@ the complete second run.
   ascent (−3 to +3 in steps of 0.1, three sweeps, maximising the Track 1 score) and shrunk 25% towards
   their mean (`fit_t1_thresholds.py`)
 - if inference falls behind the time limit, the remaining images are scored by the first model only
-
-## Citation
-
-```bibtex
-@inproceedings{upar2027density,
-  title     = {Density-Aware Prediction Sharing for Attribute-Based Person Retrieval},
-  author    = {AUTHORS_TODO},
-  booktitle = {Proceedings of the IEEE/CVF Winter Conference on Applications of Computer Vision (WACV) Workshops},
-  year      = {2027}
-}
-```
-
-## License
-
-The code is MIT licensed (see `LICENSE`). The trained weights are for non-commercial research only:
-they are trained on the UPAR annotations (CC BY-NC-SA) and the PA100k, PETA and Market-1501 images,
-and the MetaCLIP models start from MetaCLIP weights (CC BY-NC 4.0). The pre-trained backbones keep
-their own licenses.
