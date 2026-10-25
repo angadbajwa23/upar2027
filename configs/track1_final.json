@@ -1,0 +1,29 @@
+{
+ "track": 1,
+ "description": "Final Track 1 entry (Codabench, 79.44): EVA02-L LP-FT (weight 0.4) + CLIP-L MetaCLIP from a second run at epoch 6 (weight 0.6), one tuned threshold per attribute.",
+ "models": [
+  {
+   "name": "eva02L_lpft",
+   "backbone": "eva02_large_patch14_224.mim_m38m",
+   "hw": [
+    252,
+    126
+   ],
+   "head": "sigmoid",
+   "checkpoint": "weights/eva02L_lpft_ep6.pt",
+   "weight": 0.4
+  },
+  {
+   "name": "clipL_metaclip_run2",
+   "backbone": "vit_large_patch14_clip_224.metaclip_2pt5b",
+   "hw": [
+    252,
+    126
+   ],
+   "head": "sigmoid",
+   "checkpoint": "weights/clipL_metaclip_run2_ep6.pt",
+   "weight": 0.6
+  }
+ ],
+ "thresholds": "configs/track1_thresholds.json"
+}

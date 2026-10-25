@@ -1,0 +1,8 @@
+# Training and building (tested: Python 3.12, torch 2.8.0+cu128, torchvision 0.23.0, CUDA 12.8)
+torch>=2.4.1
+torchvision>=0.19.1
+timm==1.0.30
+numpy
+pillow
+# Inference inside a built submission needs only the Codabench image
+# pytorch/pytorch:2.4.1-cuda12.1-cudnn9-runtime (torch, numpy, Pillow); timm is vendored.

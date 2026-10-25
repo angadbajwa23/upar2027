@@ -1,0 +1,61 @@
+{
+ "track": 2,
+ "description": "Final Track 2 entry (69.11 mADM on the test set): three L models, likelihood scoring, whitened density-controlled sharing, capped groups.",
+ "models": [
+  {
+   "name": "eva02L_lpft",
+   "backbone": "eva02_large_patch14_224.mim_m38m",
+   "hw": [
+    252,
+    126
+   ],
+   "head": "sigmoid",
+   "checkpoint": "weights/eva02L_lpft_ep6.pt"
+  },
+  {
+   "name": "clipL_metaclip",
+   "backbone": "vit_large_patch14_clip_224.metaclip_2pt5b",
+   "hw": [
+    252,
+    126
+   ],
+   "head": "sigmoid",
+   "checkpoint": "weights/clipL_metaclip_ep4.pt"
+  },
+  {
+   "name": "clipL_openai",
+   "backbone": "vit_large_patch14_clip_224.openai",
+   "hw": [
+    252,
+    126
+   ],
+   "head": "sigmoid",
+   "checkpoint": "weights/clipL_openai_ep4.pt"
+  }
+ ],
+ "scoring": {
+  "type": "ll",
+  "eps": 0.0001
+ },
+ "tta_flip": false,
+ "batch": 256,
+ "threads": 16,
+ "knn": {
+  "k": 20,
+  "beta": 0.95,
+  "iters": 3,
+  "gate_floor": 0.2,
+  "gate_gamma": 1.0,
+  "tau": 0.15,
+  "whiten": {
+   "frac": 1.0,
+   "shrink": 0.01
+  },
+  "clus": {
+   "k": 10,
+   "s0": 0.45,
+   "beta": 0.5,
+   "cap": 64
+  }
+ }
+}
