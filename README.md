@@ -3,10 +3,10 @@
 Training code, trained models and the exact submission code of team `angadbajwa` for the
 [UPAR Challenge 2027](https://vap.aau.dk/rws/challenge/) (Real-World Surveillance workshop, WACV 2027).
 
-| Track | Final entry | Test score | Place |
-|---|---|---|---|
-| 2: Attribute-based person retrieval | 3 ViT-L models + density-controlled sharing | 69.11 mADM (mAP 40.66, mINP 28.38) | 3rd / 49 |
-| 1: Pedestrian attribute recognition | 2 ViT-L models + one threshold per attribute | 79.44 (mA 79.56, instance F1 79.32) | 20th / 89 |
+| Track | Final entry | Test score |
+|---|---|---|
+| 2: Attribute-based person retrieval | 3 ViT-L models + density-controlled sharing | 69.11 mADM (mAP 40.66, mINP 28.38) |
+| 1: Pedestrian attribute recognition | 2 ViT-L models + one threshold per attribute | 79.44 (mA 79.56, instance F1 79.32) |
 
 Both tracks use the same attribute models, trained with one recipe. Only the last step differs.
 
