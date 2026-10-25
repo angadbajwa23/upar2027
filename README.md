@@ -113,7 +113,7 @@ bash scripts/docker_eval.sh /path/to/data     # both, inside the Codabench image
 
 ```bash
 python build_cache.py                    # cache/train_384x192.npy, cache/val_384x192.npy (~28 GB)
-bash scripts/train_final.sh              # the four models, 1-2 h each
+bash scripts/train_final.sh              # the four models
 bash scripts/build_from_training.sh      # link the epochs we used, re-fit the Track 1 thresholds, build both submissions
 ```
 
@@ -130,9 +130,7 @@ EVA02-L first trains only the linear layer for one epoch (LP-FT); its log counts
 so `ep6` means the LP epoch plus 5 fine-tuning epochs. For each model we used the epoch with the best
 val retrieval score, except the Track 1 CLIP-L, which is the last epoch (6) of a second run.
 
-GPU training is not bit-exact, so retrained models will differ slightly from the released ones. Our
-first MetaCLIP run stopped after epoch 4 because the disk filled up; epoch 4 was also the best epoch of
-the complete second run.
+GPU training is not bit-exact, so retrained models will differ slightly from the released ones.
 
 ## 5. Settings of the final entries
 

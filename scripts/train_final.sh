@@ -1,5 +1,5 @@
 #!/bin/bash
-# Train the four models behind the final entries (about 1-2 h each on one 32 GB GPU).
+# Train the four models behind the final entries (one 32 GB GPU).
 # Every model: input 252x126, batch 96, lr 5e-5, layer-wise lr decay 0.8, weight decay 0.05,
 # dropout 0.1, label smoothing 0.05, EMA 0.9995, 1 warm-up epoch + cosine, colour/lighting aug (--photo 1).
 # --save-epochs keeps every epoch's checkpoint and val predictions (runs/<name>/ep<N>.pt, preds_ep<N>.npz).
