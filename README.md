@@ -64,24 +64,23 @@ thresholds and the Track 2 settings.
 
 ## 2. Environment
 
-Training and building: Python 3.12, torch 2.8.0 (CUDA 12.8), timm 1.0.30, one NVIDIA RTX PRO 4500
-(32 GB).
-
-```bash
-pip install -r requirements.txt "huggingface_hub>=0.34"
-```
-
-or in Docker:
+Everything (building, evaluation and training) runs in the Codabench image
+`pytorch/pytorch:2.4.1-cuda12.1-cudnn9-runtime` (torch 2.4.1, CUDA 12.1), plus timm 1.0.30 and
+huggingface_hub. It needs an NVIDIA GPU supported by CUDA 12.1 (Ampere, Ada or Hopper, e.g. A10, A100,
+RTX A6000; not Blackwell), a driver ≥ 530 and the NVIDIA Container Toolkit. Training needs at least
+32 GB of GPU memory (e.g. A100, RTX A6000); evaluation also runs on a 24 GB A10.
 
 ```bash
 docker run --gpus all --shm-size 16g -it -v $PWD:/upar2027 -w /upar2027 \
-    pytorch/pytorch:2.8.0-cuda12.8-cudnn9-runtime bash
+    pytorch/pytorch:2.4.1-cuda12.1-cudnn9-runtime bash
 pip install timm==1.0.30 "huggingface_hub>=0.34"
 ```
 
-A built submission runs in the Codabench image `pytorch/pytorch:2.4.1-cuda12.1-cudnn9-runtime`
-without extra packages or network access, since the folder carries its own copy of timm. On
-Codabench it ran on one NVIDIA A10 (24 GB) within the 5-minute limit.
+A built submission needs neither package: it carries its own copy of timm and runs in the plain image
+without network access. On Codabench it ran on one NVIDIA A10 (24 GB) within the 5-minute limit.
+
+Our models were trained with torch 2.8.0 (CUDA 12.8) on one NVIDIA RTX PRO 4500 (32 GB). In the image
+above, the released weights give our validation scores, and training runs with the same recipe.
 
 ## 3. Rebuild the leaderboard submissions from the released weights
 
@@ -134,8 +133,14 @@ scores one of them only.
 
 ## 4. Train from scratch
 
+`train.py` does not read the image files. `build_cache.py` first decodes every train and val image
+once, resizes it to 384×192 and stores each split as one uint8 array (`cache/train_384x192.npy`,
+`cache/val_384x192.npy`, about 28 GB in total). Training then reads the images straight from these
+arrays instead of decoding JPEGs every epoch. Run it once before training, and again only if the
+data changes; `UPAR_CACHE` sets another cache folder.
+
 ```bash
-python build_cache.py                    # cache/train_384x192.npy, cache/val_384x192.npy (~28 GB)
+python build_cache.py
 bash scripts/train_final.sh              # the four models
 bash scripts/build_from_training.sh      # link the epochs we used, re-fit the Track 1 thresholds, build both submissions
 ```
