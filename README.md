@@ -105,12 +105,13 @@ bash scripts/build_submissions.sh        # -> build/track2(.zip), build/track1(.
 ```
 
 This gives the same code, config and weights as the two zips we uploaded. To run them on the
-validation split the way the Codabench ingestion program does:
+validation split the way the Codabench ingestion program does (`--data` defaults to `data/`; the
+folder needs the layout of section 1, with `annotations/task2/val/`):
 
 ```bash
-python tools/eval_track2.py build/track2      # mADM, mAP, Rank-1/5/10, mINP
-python tools/eval_track1.py build/track1      # Track 1 score, mA, instance F1
-bash scripts/docker_eval.sh /path/to/data     # both, inside the Codabench image
+python tools/eval_track2.py build/track2 --data /path/to/validation_data   # mADM, mAP, Rank-1/5/10, mINP
+python tools/eval_track1.py build/track1 --data /path/to/validation_data   # Track 1 score, mA, instance F1
+bash scripts/docker_eval.sh /path/to/validation_data                       # both, inside the Codabench image
 ```
 
 ## 4. Train from scratch
