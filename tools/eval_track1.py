@@ -2,7 +2,7 @@
 predict_batch in chunks of run.BATCH_SIZE), check the output format, and score it on val
 (Track 1 score = harmonic mean of mA and instance F1, averaged over the val datasets).
 
-python tools/eval_track1.py build/track1 [--domain PA100k] [--save probs.npy]
+python tools/eval_track1.py build/track1 [--data /path/to/data] [--domain PA100k] [--save probs.npy]
 """
 import argparse
 import importlib.util
@@ -12,15 +12,18 @@ import time
 
 import numpy as np
 
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from common import ATTRS, DATA, domain_of, load_gt  # noqa: E402
-from t1_metrics import challenge  # noqa: E402
-
 ap = argparse.ArgumentParser()
 ap.add_argument("sub")
+ap.add_argument("--data", default="", help="data root (default: $UPAR_DATA, else data/)")
 ap.add_argument("--domain", default="", help="evaluate one val dataset only (Market1501, PA100k or PETA)")
 ap.add_argument("--save", default="", help="save the probabilities (.npy)")
 args = ap.parse_args()
+if args.data:
+    os.environ["UPAR_DATA"] = os.path.abspath(args.data)
+
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from common import ATTRS, DATA, domain_of, load_gt  # noqa: E402
+from t1_metrics import challenge  # noqa: E402
 
 names, y, _, _ = load_gt("val")
 dom = domain_of(names)

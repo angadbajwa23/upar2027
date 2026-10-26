@@ -2,7 +2,7 @@
 rank_gallery once with the whole gallery), check the output format, and score it on val
 (mADM, mAP, Rank-1/5/10, mINP).
 
-python tools/eval_track2.py build/track2 [--domain PA100k] [--n 2000] [--save scores.npy]
+python tools/eval_track2.py build/track2 [--data /path/to/data] [--domain PA100k] [--n 2000] [--save scores.npy]
 """
 import argparse
 import importlib.util
@@ -12,16 +12,19 @@ import time
 
 import numpy as np
 
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from common import ATTRS, DATA, domain_of, load_gt  # noqa: E402
-from metrics import evaluate, fmt, subset_protocol  # noqa: E402
-
 ap = argparse.ArgumentParser()
 ap.add_argument("sub")
+ap.add_argument("--data", default="", help="data root (default: $UPAR_DATA, else data/)")
 ap.add_argument("--domain", default="", help="evaluate one val dataset only (Market1501, PA100k or PETA)")
 ap.add_argument("--n", type=int, default=0, help="random gallery subset size (0 = all)")
 ap.add_argument("--save", default="", help="save the score matrix (.npy)")
 args = ap.parse_args()
+if args.data:
+    os.environ["UPAR_DATA"] = os.path.abspath(args.data)
+
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from common import ATTRS, DATA, domain_of, load_gt  # noqa: E402
+from metrics import evaluate, fmt, subset_protocol  # noqa: E402
 
 names, y, qid, q = load_gt("val")
 mask = np.ones(len(names), bool)
