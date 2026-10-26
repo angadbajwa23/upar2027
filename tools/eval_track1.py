@@ -27,6 +27,8 @@ dom = domain_of(names)
 sel = np.where(dom == args.domain)[0] if args.domain else np.arange(len(names))
 
 sub = os.path.abspath(args.sub)
+if not os.path.isfile(os.path.join(sub, "run.py")):
+    sys.exit(f"{sub} is not a built submission; run  bash scripts/build_submissions.sh  first")
 os.chdir(sub)
 spec = importlib.util.spec_from_file_location("run", os.path.join(sub, "run.py"))
 run = importlib.util.module_from_spec(spec)

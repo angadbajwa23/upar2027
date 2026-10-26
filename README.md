@@ -39,32 +39,11 @@ tools/                   eval_track{1,2}.py: run a submission folder the way Cod
 zips. They still contain a few options that the final configs switch off (other scoring types, score
 smoothing, the Track 1 `force1` rule, flip TTA).
 
-## 1. Environment
+## 1. Data
 
-Training and building: Python 3.12, torch 2.8.0 (CUDA 12.8), timm 1.0.30, one NVIDIA RTX PRO 4500
-(32 GB). `make_submission.py` also needs the `zip` command.
-
-```bash
-pip install -r requirements.txt
-```
-
-or in Docker:
-
-```bash
-docker run --gpus all --shm-size 16g -it -v $PWD:/upar2027 -w /upar2027 \
-    pytorch/pytorch:2.8.0-cuda12.8-cudnn9-runtime bash
-pip install timm==1.0.30 && apt-get update && apt-get install -y zip
-```
-
-A built submission runs in the Codabench image `pytorch/pytorch:2.4.1-cuda12.1-cudnn9-runtime`
-without extra packages or network access, since the folder carries its own copy of timm. On
-Codabench it ran on one NVIDIA A10 (24 GB) within the 5-minute limit.
-
-## 2. Data
-
-Download the challenge data with the organizers' kit
-([UPAR-Challenge-2027](https://github.com/speckean/UPAR-Challenge-2027), `python download_datasets.py`)
-and put it (or a link to it) at `data/`, or point `UPAR_DATA` to it:
+Get the challenge data by following the instructions of the
+[UPAR Challenge 2027](https://github.com/speckean/UPAR-Challenge-2027). The data directory should
+have the structure below. Put it (or a link to it) at `data/`, or point `UPAR_DATA` to it:
 
 ```
 data/
@@ -74,9 +53,35 @@ data/
 └── PETA/images/
 ```
 
+```bash
+ln -s /path/to/upar_data data
+ls data                          # annotations  Market1501  PA100k  PETA
+```
+
 Image paths in `gt.csv` are relative to `data/`. Both tracks use these annotation files. We train on
 the official training split only; the validation split is used to choose epochs, the Track 1
 thresholds and the Track 2 settings.
+
+## 2. Environment
+
+Training and building: Python 3.12, torch 2.8.0 (CUDA 12.8), timm 1.0.30, one NVIDIA RTX PRO 4500
+(32 GB).
+
+```bash
+pip install -r requirements.txt "huggingface_hub>=0.34"
+```
+
+or in Docker:
+
+```bash
+docker run --gpus all --shm-size 16g -it -v $PWD:/upar2027 -w /upar2027 \
+    pytorch/pytorch:2.8.0-cuda12.8-cudnn9-runtime bash
+pip install timm==1.0.30 "huggingface_hub>=0.34"
+```
+
+A built submission runs in the Codabench image `pytorch/pytorch:2.4.1-cuda12.1-cudnn9-runtime`
+without extra packages or network access, since the folder carries its own copy of timm. On
+Codabench it ran on one NVIDIA A10 (24 GB) within the 5-minute limit.
 
 ## 3. Rebuild the leaderboard submissions from the released weights
 
@@ -84,7 +89,6 @@ The four weight files (fp16 state dicts, about 600 MB each) are on the Hugging F
 [Angad23/upar2027](https://huggingface.co/Angad23/upar2027).
 
 ```bash
-pip install -U huggingface_hub
 hf download Angad23/upar2027 --include "*.pt" --local-dir weights
 (cd weights && sha256sum -c ../weights.sha256)
 ```

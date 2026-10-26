@@ -12,7 +12,7 @@ import argparse
 import json
 import os
 import shutil
-import subprocess
+import zipfile
 
 import timm
 import torch
@@ -66,5 +66,10 @@ if not args.no_zip:
     zip_path = out.rstrip("/") + ".zip"
     if os.path.exists(zip_path):
         os.remove(zip_path)
-    subprocess.run(["zip", "-qr", zip_path, ".", "-x", "*/__pycache__/*", "*.DS_Store"], cwd=out, check=True)
+    with zipfile.ZipFile(zip_path, "w", zipfile.ZIP_DEFLATED) as z:
+        for root, dirs, files in os.walk(out):
+            dirs[:] = sorted(d for d in dirs if d != "__pycache__")
+            for f in sorted(files):
+                if f != ".DS_Store":
+                    z.write(os.path.join(root, f), os.path.relpath(os.path.join(root, f), out))
     print("zip   ", zip_path, f"{os.path.getsize(zip_path) / 1e6:.0f} MB")
