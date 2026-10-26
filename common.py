@@ -43,12 +43,18 @@ BINARY = [3, 7, 20, 35, 36, 39]
 CACHE_HW = (384, 192)
 
 
-def load_gt(split: str):
-    """Returns (image relpaths, labels uint8 [N,40], query ids [N], queries uint8 [Q,40])."""
+def load_labels(split: str):
+    """Returns (image relpaths, labels uint8 [N,40]) from annotations/task2/<split>/gt.csv."""
     with open(os.path.join(ANN, split, "gt.csv")) as fh:
         rows = list(csv.reader(fh))[1:]
     names = [r[0] for r in rows]
     y = np.array([[int(v) for v in r[1:]] for r in rows], dtype=np.uint8)
+    return names, y
+
+
+def load_gt(split: str):
+    """Returns (image relpaths, labels uint8 [N,40], query ids [N], queries uint8 [Q,40])."""
+    names, y = load_labels(split)
     with open(os.path.join(ANN, split, "ids.csv")) as fh:
         idmap = {r[0]: int(r[1]) for r in csv.reader(fh) if not r[0].startswith("#")}
     qid = np.array([idmap[n] for n in names], dtype=np.int64)

@@ -1,8 +1,8 @@
 """Run a Track 1 submission folder like the Codabench ingestion program (import run.py, call
-predict_batch in chunks of run.BATCH_SIZE), check the output format, and score it on val
-(Track 1 score = harmonic mean of mA and instance F1, averaged over the val datasets).
+predict_batch in chunks of run.BATCH_SIZE), check the output format, and score it on a labelled split
+(val by default; Track 1 score = harmonic mean of mA and instance F1, averaged over the datasets).
 
-python tools/eval_track1.py build/track1 [--data /path/to/data] [--domain PA100k] [--save probs.npy]
+python tools/eval_track1.py build/track1 [--data /path/to/data] [--split val] [--domain PA100k] [--save probs.npy]
 """
 import argparse
 import importlib.util
@@ -15,17 +15,19 @@ import numpy as np
 ap = argparse.ArgumentParser()
 ap.add_argument("sub")
 ap.add_argument("--data", default="", help="data root (default: $UPAR_DATA, else data/)")
-ap.add_argument("--domain", default="", help="evaluate one val dataset only (Market1501, PA100k or PETA)")
+ap.add_argument("--split", default="val",
+                help="annotation split to score on: annotations/task2/<split>/ under the data root")
+ap.add_argument("--domain", default="", help="evaluate one dataset only: first folder of the image paths (e.g. Market1501, PA100k, PETA)")
 ap.add_argument("--save", default="", help="save the probabilities (.npy)")
 args = ap.parse_args()
 if args.data:
     os.environ["UPAR_DATA"] = os.path.abspath(args.data)
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from common import ATTRS, DATA, domain_of, load_gt  # noqa: E402
+from common import ATTRS, DATA, domain_of, load_labels  # noqa: E402
 from t1_metrics import challenge  # noqa: E402
 
-names, y, _, _ = load_gt("val")
+names, y = load_labels(args.split)
 dom = domain_of(names)
 sel = np.where(dom == args.domain)[0] if args.domain else np.arange(len(names))
 

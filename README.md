@@ -105,14 +105,32 @@ bash scripts/build_submissions.sh        # -> build/track2(.zip), build/track1(.
 ```
 
 This gives the same code, config and weights as the two zips we uploaded. To run them on the
-validation split the way the Codabench ingestion program does (`--data` defaults to `data/`; the
-folder needs the layout of section 1, with `annotations/task2/val/`):
+validation split the way the Codabench ingestion program does (`--data` is the data root of
+section 1 and defaults to `data/`):
 
 ```bash
-python tools/eval_track2.py build/track2 --data /path/to/validation_data   # mADM, mAP, Rank-1/5/10, mINP
-python tools/eval_track1.py build/track1 --data /path/to/validation_data   # Track 1 score, mA, instance F1
-bash scripts/docker_eval.sh /path/to/validation_data                       # both, inside the Codabench image
+python tools/eval_track2.py build/track2 --data /path/to/data   # mADM, mAP, Rank-1/5/10, mINP
+python tools/eval_track1.py build/track1 --data /path/to/data   # Track 1 score, mA, instance F1
+bash scripts/docker_eval.sh /path/to/data                       # both, inside the Codabench image
 ```
+
+To score on another labelled split, such as the test set, put its labels next to `val/` in the same
+format and pass `--split`:
+
+```
+data/annotations/task2/test/
+├── gt.csv        image path (relative to data/) + 40 labels per line; Track 1 needs only this file
+├── ids.csv       image path, person id
+└── queries.csv   one 40-bit query per line
+```
+
+```bash
+python tools/eval_track2.py build/track2 --data /path/to/data --split test
+python tools/eval_track1.py build/track1 --data /path/to/data --split test
+```
+
+Scores are averaged over datasets, taken from the first folder of each image path. `--domain`
+scores one of them only.
 
 ## 4. Train from scratch
 
