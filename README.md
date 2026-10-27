@@ -107,9 +107,9 @@ validation split the way the Codabench ingestion program does (`--data` is the d
 section 1 and defaults to `data/`):
 
 ```bash
-python tools/eval_track2.py build/track2 --data /path/to/data   # mADM, mAP, Rank-1/5/10, mINP
-python tools/eval_track1.py build/track1 --data /path/to/data   # Track 1 score, mA, instance F1
-bash scripts/docker_eval.sh /path/to/data                       # both, inside the Codabench image
+python tools/eval_track2.py build/track2 --data /path/to/data --split val   # mADM, mAP, Rank-1/5/10, mINP
+python tools/eval_track1.py build/track1 --data /path/to/data --split val   # Track 1 score, mA, instance F1
+bash scripts/docker_eval.sh /path/to/data                                   # both, inside the Codabench image
 ```
 
 To score on another labelled split, such as the test set, put its labels next to `val/` in the same
