@@ -6,7 +6,7 @@ Training code, trained models and the exact submission code of team `angadbajwa`
 | Track | Final entry | Test score |
 |---|---|---|
 | 2: Attribute-based person retrieval | 3 ViT-L models + density-controlled sharing | 69.11 mADM (mAP 40.66, mINP 28.38) |
-| 1: Pedestrian attribute recognition | 2 ViT-L models + one threshold per attribute | 79.44 (mA 79.56, instance F1 79.32) |
+| 1: Pedestrian attribute recognition | 2 ViT-L models + one threshold per attribute | 79.55 (mA 79.71, instance F1 79.39) |
 
 Both tracks use the same attribute models, trained with one recipe. Only the last step differs.
 
@@ -84,20 +84,19 @@ above, the released weights give our validation scores, and training runs with t
 
 ## 3. Rebuild the leaderboard submissions from the released weights
 
-The four weight files (fp16 state dicts, about 600 MB each) are on the Hugging Face Hub:
+The three weight files (fp16 state dicts, about 600 MB each) are on the Hugging Face Hub:
 [Angad23/upar2027](https://huggingface.co/Angad23/upar2027).
 
 ```bash
-hf download Angad23/upar2027 --include "*.pt" --local-dir weights
+hf download Angad23/upar2027 eva02L_lpft_ep6.pt clipL_metaclip_ep4.pt clipL_openai_ep4.pt --local-dir weights
 (cd weights && sha256sum -c ../weights.sha256)
 ```
 
 | File | Backbone (timm name) | Used in |
 |---|---|---|
 | `eva02L_lpft_ep6.pt` | EVA02-L/14, `eva02_large_patch14_224.mim_m38m`, LP-FT | Track 1, Track 2 |
-| `clipL_metaclip_ep4.pt` | CLIP ViT-L/14, `vit_large_patch14_clip_224.metaclip_2pt5b` | Track 2 |
+| `clipL_metaclip_ep4.pt` | CLIP ViT-L/14, `vit_large_patch14_clip_224.metaclip_2pt5b` | Track 1, Track 2 |
 | `clipL_openai_ep4.pt` | CLIP ViT-L/14, `vit_large_patch14_clip_224.openai` | Track 2 |
-| `clipL_metaclip_run2_ep6.pt` | CLIP ViT-L/14 MetaCLIP, second training run | Track 1 |
 
 ```bash
 bash scripts/build_submissions.sh        # -> build/track2(.zip), build/track1(.zip)
@@ -141,11 +140,11 @@ data changes; `UPAR_CACHE` sets another cache folder.
 
 ```bash
 python build_cache.py
-bash scripts/train_final.sh              # the four models
+bash scripts/train_final.sh              # the three models
 bash scripts/build_from_training.sh      # link the epochs we used, re-fit the Track 1 thresholds, build both submissions
 ```
 
-All four models share one recipe:
+All three models share one recipe:
 
 - input 252×126, linear layer on the backbone's pooled feature (dropout 0.1)
 - binary cross-entropy with DeepMAR positive-rate weights, label smoothing 0.05
@@ -156,7 +155,7 @@ All four models share one recipe:
 
 EVA02-L first trains only the linear layer for one epoch (LP-FT); its log counts that as epoch 1,
 so `ep6` means the LP epoch plus 5 fine-tuning epochs. For each model we used the epoch with the best
-val retrieval score, except the Track 1 CLIP-L, which is the last epoch (6) of a second run.
+val retrieval score.
 
 GPU training is not bit-exact, so retrained models will differ slightly from the released ones.
 
@@ -177,7 +176,7 @@ GPU training is not bit-exact, so retrained models will differ slightly from the
 
 **Track 1** (`configs/track1_final.json`)
 
-- probabilities averaged with weights 0.4 (EVA02-L) and 0.6 (CLIP-L)
+- probabilities of EVA02-L (epoch 6) and CLIP-L MetaCLIP (epoch 4) averaged with weights 0.4 and 0.6
 - one logit shift per attribute added before the 0.5 cut, fitted on the full val split by coordinate
   ascent (−3 to +3 in steps of 0.1, three sweeps, maximising the Track 1 score) and shrunk 25% towards
   their mean (`fit_t1_thresholds.py`)

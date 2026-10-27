@@ -6,7 +6,7 @@ to maximise the official Track 1 score (mean over val datasets of the harmonic m
 instance F1). Each attribute's grid is scored exactly in one vectorised pass. The shifts are then
 shrunk towards their mean: b <- lam * b + (1 - lam) * mean(b).
 
-python fit_t1_thresholds.py --preds runs/eva02L_lpft/preds_ep6.npz runs/clipL_metaclip_run2/preds_ep6.npz \
+python fit_t1_thresholds.py --preds runs/eva02L_lpft/preds_ep6.npz runs/clipL_metaclip/preds_ep4.npz \
     --weights 0.4 0.6 --shrink 0.75 --out configs/track1_thresholds.json
 """
 from __future__ import annotations
